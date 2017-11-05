@@ -1,6 +1,7 @@
 module Api
   module V1
     class ArticlesController < ApplicationController
+      before_action :find_article, only: [:show, :update, :destroy]
 
       def index
         articles = Article.order('created_at DESC')
@@ -8,7 +9,6 @@ module Api
       end
 
       def show
-        article = Article.find(params[:id])
         render json: {status: "SUCCESS", message: "Loaded article", data: article}, status: :ok
       end
 
@@ -23,7 +23,6 @@ module Api
       end
 
       def update
-        article = Article.find(params[:id])
 
         if article.update_attributes(article_params)
           render json: {status: "SUCCESS", message: "Loaded article", data: article}, status: :ok
@@ -33,13 +32,18 @@ module Api
       end
 
       def destroy
-        article = Article.find(params[:id])
+        article.destroy
         render json: {status: "SUCCESS", message: "Deleted article", data: article}, status: :ok
       end
 
       private
+
       def article_params
         params.permit(:title, :body)
+      end
+
+      def find_article
+        article = Article.find(params[:id])
       end
 
     end
